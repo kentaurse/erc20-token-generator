@@ -1,0 +1,18 @@
+{
+  "name": "TokenGenerator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.7.3",
+    "@truffle/hdwallet-provider": "^2.0.8",
+    "truffle-contract-size": "^2.0.1",
+    "truffle-plugin-verify": "^0.5.26"
+  }
+}
