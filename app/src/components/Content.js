@@ -214,6 +214,111 @@ export default class Content extends Component {
         </Button>
     }
 
+    approve() {
+        this.setState({
+            loading: true
+        }, async () => {
+            await this.MDATokenFactory._approve(
+                this.MDAFactory._address(),
+                parseFloat(this.state.price) + 1,
+                this.state.account,
+                this.paidTokenDecimals
+            )
+
+            this.setState({
+                mdaAllowance: (await this.MDATokenFactory._allowance(
+                    this.state.account,
+                    this.MDAFactory._address(),
+                    this.MDAFactory.getPaidTokenDecimals()
+                ))
+            }, () => {
+                this.setState({
+                    loading: false
+                })
+            })
+        })
+    }
+
+    create() {
+        this.setState({
+            loading: true
+        }, async () => {
+            this.setState({
+                deployedAddress: (await this.deploy())
+            }, () => {
+                if (this.state.deployedAddress) {
+                    this.setState({
+                        modalDeployed: true
+                    }, () => {
+                        this.showModalWithData(
+                            this.state.deployedAddress,
+                            'Token creado correctamente!'
+                        )
+                    })
+                }
+
+                this.setState({
+                    loading: false
+                })
+            })
+        })
+    }
+
+    async deploy() {
+        const code = this.getTokenCode()
+        if (code === 0)
+            return this.MDAFactory.deployFree(
+                this.state.tokenName,
+                this.state.tokenSymbol,
+                this.state.tokenSupply,
+                this.state.account
+            )
+        else {
+            if (this.state.payment.includes('MDA')) {
+                return this.MDAFactory.deployPaidMDA(
+                    this.state.tokenName,
+                    this.state.tokenSymbol,
+                    this.state.tokenDecimals,
+                    this.state.tokenSupply,
+                    code,
+                    this.state.account
+                )
+            } else {
+                return this.MDAFactory.deployPaidBNB(
+                    this.state.tokenName,
+                    this.state.tokenSymbol,
+                    this.state.tokenDecimals,
+                    this.state.tokenSupply,
+                    code,
+                    this.state.account
+                )
+            }
+
+        }
+    }
+
+    showModalWithData(modalMessage, modalTitle) {
+        this.setState({
+            modalMessage,
+            modalTitle,
+            modalVisibility: true
+        })
+    }
+
+    closeHandler() {
+        this.setState({
+            modalVisibility: false
+        })
+    }
+
+    openExplorer() {
+        window.open(
+            `https://testnet.bscscan.com/token/${this.state.deployedAddress}`,
+            '_blank',
+            'noopener,noreferrer'
+        )
+    }
+
     render() {
         return <Container css={{ mt: 50 }} gap={1}>
             <Row css={{
@@ -386,6 +491,35 @@ export default class Content extends Component {
                     </Row> :
                     <Login />
             }
+            <Modal
+                closeButton
+                aria-labelledby="modal-title"
+                open={this.state.modalVisibility}
+                onClose={() => this.closeHandler()}
+            >
+                <Modal.Header>
+                    <Text id="modal-title" size={20}>
+                        <Text b size={20}>
+                            {this.state.modalTitle}
+                        </Text>
+                    </Text>
+                </Modal.Header>
+                <Modal.Body>
+                    <Text size={15}>{this.state.modalMessage}</Text>
+                </Modal.Body>
+                <Modal.Footer>
+                    {
+                        this.state.modalDeployed ?
+                            <Button auto flat onClick={() => this.openExplorer()}>
+                                Ver Token &nbsp;<OpenLink size={18} color="#0271f5" />
+                            </Button> :
+                            <Button auto flat onClick={() => this.closeHandler()}>
+                                Ok
+                            </Button>
+
+                    }
+                </Modal.Footer>
+            </Modal>
         </Container>
     }
 }
