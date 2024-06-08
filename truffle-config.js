@@ -7,15 +7,15 @@ module.exports = {
         'truffle-contract-size'
     ],
     api_keys: {
-        bscscan: ''
+        bscscan: 'tu apikey de bscsacn'
     },
     contracts_build_directory: path.join(__dirname, "app/src/contracts"),
     networks: {
         bsc_testnet: {
             provider: () => new HDWalletProvider(
-                'frase secreta aqui',
+                'tu frase secreta',
                 `https://data-seed-prebsc-1-s1.binance.org:8545`, 0),
-            from: "tu wallet aqui",
+            from: "tu wallet",
             gas: 6000000,
             network_id: 97,
             confirmations: 4,
