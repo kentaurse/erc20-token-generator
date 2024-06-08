@@ -3,3 +3,4 @@
 /app/package-lock.json
 package-lock.json
 .DS_Store
+/app/src/contracts/*.json
